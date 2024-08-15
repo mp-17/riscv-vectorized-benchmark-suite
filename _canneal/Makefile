@@ -2,11 +2,14 @@
 GCC_TOOLCHAIN_DIR := /newlib/
 SYSROOT_DIR := $(GCC_TOOLCHAIN_DIR)/riscv64-unknown-elf
 
-LLVM := /llvm/build/
-SPIKE := spike
-PK := pk
+# LLVM := /llvm/build/
+GCC   ?= /usr/scratch2/pisoc12/msc24f10/workspace/upstream_linux_bringup/cva6-sdk-vinc-replicate/buildroot/output/host/bin/riscv64-linux-g++
+OBJDUMP ?= /usr/scratch2/pisoc12/msc24f10/workspace/upstream_linux_bringup/cva6-sdk-vinc-replicate/buildroot/output/host/bin/riscv64-linux-objdump
+SPIKE   := /usr/scratch2/pisoc12/msc24f10/workspace/upstream_linux_bringup/cva6-sdk-vinc-replicate/rvv_progs/rivec/tools/install-spike/bin/spike
+PK      := /usr/scratch2/pisoc12/msc24f10/workspace/upstream_linux_bringup/cva6-sdk-vinc-replicate/rvv_progs/rivec/tools/install-pk/riscv64-unknown-elf/bin/pk
 
-target = bin/rvv-test
+target_ser = bin/rvv-test-serial
+target_vec = bin/rvv-test-vector
 
 start:
 	mkdir bin ; \
@@ -14,22 +17,27 @@ start:
 
 serial:
 	for entry in src/*.cpp ; do \
-		${LLVM}/bin/clang++  -Wall --target=riscv64-unknown-elf  -march=rv64gcv1p0 -menable-experimental-extensions --sysroot=$(SYSROOT_DIR) --gcc-toolchain=$(GCC_TOOLCHAIN_DIR)  -O2 -c -o  $$entry.o  $$entry ; \
+		${GCC} -Wall -static -march=rv64gcv -O2 -c -o  $$entry.o  $$entry ; \
 	done
-	${LLVM}/bin/clang++ -Wall --target=riscv64-unknown-elf  -march=rv64gcv1p0 -menable-experimental-extensions --sysroot=$(SYSROOT_DIR) --gcc-toolchain=$(GCC_TOOLCHAIN_DIR) -O2  -o $(target) src/*.cpp.o -lm
+	${GCC} -Wall -static -march=rv64gcv -O2 -o $(target_ser) src/*.cpp.o -lm
+	${OBJDUMP} -D $(target_ser) > $(target_ser).dump
 	rm src/*.o
 
 vector:
-	${LLVM}/bin/clang++ -Wall --target=riscv64-unknown-elf -DUSE_RISCV_VECTOR  -march=rv64gcv1p0 -menable-experimental-extensions --sysroot=$(SYSROOT_DIR) --gcc-toolchain=$(GCC_TOOLCHAIN_DIR) -O2 -c -o src/annealer_thread.o src/annealer_thread.cpp
-	${LLVM}/bin/clang++ -Wall --target=riscv64-unknown-elf -DUSE_RISCV_VECTOR -march=rv64gcv1p0 -menable-experimental-extensions --sysroot=$(SYSROOT_DIR) --gcc-toolchain=$(GCC_TOOLCHAIN_DIR) -O2 -c -o src/main.o src/main.cpp
-	${LLVM}/bin/clang++ -Wall --target=riscv64-unknown-elf -DUSE_RISCV_VECTOR -march=rv64gcv1p0 -menable-experimental-extensions --sysroot=$(SYSROOT_DIR) --gcc-toolchain=$(GCC_TOOLCHAIN_DIR) -O2 -c -o src/netlist.o src/netlist.cpp
-	${LLVM}/bin/clang++ -Wall --target=riscv64-unknown-elf -DUSE_RISCV_VECTOR -march=rv64gcv1p0 -menable-experimental-extensions --sysroot=$(SYSROOT_DIR) --gcc-toolchain=$(GCC_TOOLCHAIN_DIR) -O2 -c -o src/netlist_elem.o src/netlist_elem.cpp
-	${LLVM}/bin/clang++ -Wall --target=riscv64-unknown-elf -DUSE_RISCV_VECTOR -march=rv64gcv1p0 -menable-experimental-extensions --sysroot=$(SYSROOT_DIR) --gcc-toolchain=$(GCC_TOOLCHAIN_DIR) -O2 -c -o src/rng.o src/rng.cpp
-	${LLVM}/bin/clang++ -Wall --target=riscv64-unknown-elf -DUSE_RISCV_VECTOR -march=rv64gcv1p0 -menable-experimental-extensions --sysroot=$(SYSROOT_DIR) --gcc-toolchain=$(GCC_TOOLCHAIN_DIR) -O2  -o bin/canneal_vector.exe src/*.o -lm
+	${GCC} -Wall -static -DUSE_RISCV_VECTOR -march=rv64gcv -O2 -c -o src/annealer_thread.o src/annealer_thread.cpp
+	${GCC} -Wall -static -DUSE_RISCV_VECTOR -march=rv64gcv -O2 -c -o src/main.o src/main.cpp
+	${GCC} -Wall -static -DUSE_RISCV_VECTOR -march=rv64gcv -O2 -c -o src/netlist.o src/netlist.cpp
+	${GCC} -Wall -static -DUSE_RISCV_VECTOR -march=rv64gcv -O2 -c -o src/netlist_elem.o src/netlist_elem.cpp
+	${GCC} -Wall -static -DUSE_RISCV_VECTOR -march=rv64gcv -O2 -c -o src/rng.o src/rng.cpp
+	${GCC} -Wall -static -DUSE_RISCV_VECTOR -march=rv64gcv -O2    -o $(target_vec) src/*.o -lm
+	${OBJDUMP} -D $(target_vec) > $(target_vec).dump
 	rm src/*.o
 
-runspike :
-	$(SPIKE) --isa=rv64gcv $(PK) $(target) 1 100 300 input/100.nets 8
+runspike-ser:
+	$(SPIKE) --isa=rv64gcv $(PK) $(target_ser) 1 100 300 input/100.nets 8
+
+runspike-vec:
+	$(SPIKE) --isa=rv64gcv $(PK) $(target_vec) 1 100 300 input/100.nets 8
 
 
 clean:
