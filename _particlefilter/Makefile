@@ -12,14 +12,14 @@ start:
 	rm bin/*.*
 
 serial:
-	${GCC} -Wall -static -march=rv64gcv -O2 -c -o src/particlefilter_serial.o src/particlefilter.c
-	${GCC} -Wall -static -march=rv64gcv -O2 -o $(target_ser) src/particlefilter_serial.o -lm
+	${GXX} -Wall -static -march=rv64gcv -O2 -c -o src/particlefilter_serial.o src/particlefilter.c
+	${GXX} -Wall -static -march=rv64gcv -O2 -o $(target_ser) src/particlefilter_serial.o -lm
 	${OBJDUMP} -D $(target_ser) > $(target_ser).dump
 	rm src/*.o
 
 vector:
-	${GCC} -Wall -static -DUSE_RISCV_VECTOR -DMVL_$$mvl -march=rv64gcv -O2 -c -o src/particlefilter.o src/particlefilter.c ; \
-	${GCC} -Wall -static -DUSE_RISCV_VECTOR -DMVL_$$mvl -march=rv64gcv -O2 -o $(target_vec) src/*.o -lm ; \
+	${GXX} -Wall -static -DUSE_RISCV_VECTOR -DMVL_$$mvl -march=rv64gcv -O2 -c -o src/particlefilter.o src/particlefilter.c ; \
+	${GXX} -Wall -static -DUSE_RISCV_VECTOR -DMVL_$$mvl -march=rv64gcv -O2 -o $(target_vec) src/*.o -lm ; \
 	${OBJDUMP} -D $(target_vec) > $(target_vec).dump
 	rm src/*.o
 
