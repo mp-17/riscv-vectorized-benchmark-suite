@@ -29,7 +29,7 @@ runspike-ser:
 	$(SPIKE) --isa=rv64gcv $(PK) bin/jacobi-2d_serial.exe 128 1 out-ser.txt
 
 runspike-vec:
-	$(SPIKE) -d --isa=rv64gcv $(PK) bin/jacobi-2d_vector.exe 128 1 out-vec.txt
+	$(SPIKE) --isa=rv64gcv $(PK) bin/jacobi-2d_vector.exe 128 1 out-vec.txt
 
 copy:
 	rm -r ../../Test/_jacobi-2d/bin/*.exe; \
