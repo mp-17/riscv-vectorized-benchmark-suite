@@ -8,11 +8,11 @@ target_ser = bin/rvv-test-serial
 target_vec = bin/rvv-test-vector
 
 serial:
-	${GCC} -static -march=rv64gcv -O2 -o $(target_ser) src/blackscholes.cpp -lm
+	${GXX} -static -march=rv64gcv -O2 -o $(target_ser) src/blackscholes.cpp -lm
 	${OBJDUMP} -D $(target_ser) > $(target_ser).dump
 
 vector:
-	${GCC} -static -DUSE_RISCV_VECTOR -march=rv64gcv -O2 -o $(target_vec)  src/blackscholes.cpp -lm
+	${GXX} -static -DUSE_RISCV_VECTOR -march=rv64gcv -O2 -o $(target_vec)  src/blackscholes.cpp -lm
 	${OBJDUMP} -D $(target_vec) > $(target_vec).dump
 
 runspike-ser:
