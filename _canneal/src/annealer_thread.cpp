@@ -36,12 +36,12 @@
 #include "annealer_types.h"
 #include "netlist_elem.h"
 #include <math.h>
-#include <iostream>
+//#include <iostream>
 #include <fstream>
 #include "rng.h"
 #include <stdio.h>
-using std::cout;
-using std::endl;
+//using std::cout;
+//using std::endl;
 
 #include <stdlib.h>
 
@@ -70,7 +70,7 @@ void annealer_thread::Run()
     #ifdef USE_RISCV_VECTOR
     //unsigned long int gvl   = __builtin_epi_vsetvlmax(__epi_e32, __epi_m1);
     unsigned long int gvl   = vsetvlmax_e32m1(); //PLCT
-    
+
     mask = (int*)malloc(gvl*sizeof(int));
     for(int i=0 ; i<=gvl ; i=i+2) { mask[i]=1;  mask[i+1]=0; }
     #endif // !USE_RISCV_VECTOR
@@ -159,10 +159,10 @@ routing_cost_t annealer_thread::calculate_delta_routing_cost_vector(netlist_elem
         //int* mask;
         //mask = (int*)malloc(gvl*sizeof(int));
         //for(int i=0 ; i<=gvl ; i=i+2) { mask[i]=1;  mask[i+1]=0; }
-        
+
         //__epi_2xi1  xMask = __builtin_epi_cast_2xi1_2xi32(_MM_LOAD_i32(mask,gvl));
         _MMR_MASK_i32 xMask =  _MM_CAST_i1_i32(_MM_LOAD_i32(mask,gvl), gvl); //PLCT
-        
+
         _MMR_i32 xAFanin_loc     = _MM_MERGE_i32(_MM_SET_i32(a_loc->y,gvl),_MM_SET_i32(a_loc->x,gvl),xMask,gvl);
         _MMR_i32 xBFanin_loc     = _MM_MERGE_i32(_MM_SET_i32(b_loc->y,gvl),_MM_SET_i32(b_loc->x,gvl),xMask,gvl);
 
@@ -212,4 +212,3 @@ bool annealer_thread::keep_going(int temp_steps_completed, int accepted_good_mov
 
     return rv;
 }
-

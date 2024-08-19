@@ -33,7 +33,7 @@
 #include "rng.h"
 
 #include <fstream>
-#include <iostream>
+//#include <iostream>
 #include <assert.h>
 #include <deque>
 
@@ -94,11 +94,11 @@ netlist_elem* netlist::get_random_element(long* elem_id, long different_from, Rn
 {
 	long id = rng->rand(_chip_size);
 	netlist_elem* elem = &(_elements[id]);
-	
+
 	//loop until we get a non duplicate element
 	//-1 is not a possible element, will never enter this loop in that case
 	//if it doesn't work, try a new one
-	while (id == different_from){ 
+	while (id == different_from){
 		id = rng->rand(_chip_size);
 		elem = &(_elements[id]);
 	}
@@ -115,7 +115,7 @@ void netlist::get_random_pair(netlist_elem** a, netlist_elem** b, Rng* rng)
 	//get a random element
 	long id_a = rng->rand(_chip_size);
 	netlist_elem* elem_a = &(_elements[id_a]);
-	
+
 	//now do the same for b
 	long id_b = rng->rand(_chip_size);
 	netlist_elem* elem_b = &(_elements[id_b]);
@@ -153,8 +153,92 @@ netlist_elem* netlist::netlist_elem_from_name(std::string& name)
 
 //*****************************************************************************************
 //  TODO add errorchecking
-// ctor.  Takes a properly formatted input file, and converts it into a 
+// ctor.  Takes a properly formatted input file, and converts it into a
 //*****************************************************************************************
+
+netlist::netlist(const std::string& filename) {
+    FILE* fin = fopen(filename.c_str(), "r");
+    assert(fin != nullptr); // were there any errors on opening?
+
+    // Read the chip_array parameters
+    if (fscanf(fin, "%d %d %d", &_num_elements, &_max_x, &_max_y) != 3) {
+        fprintf(stderr, "Error reading chip array parameters\n");
+        fclose(fin);
+        return;
+    }
+
+    _chip_size = _max_x * _max_y;
+    assert(_num_elements < _chip_size);
+
+    // Create a chip of the right size
+    _elements.resize(_chip_size);
+
+    printf("locs created\n");
+
+    // Create the location elements
+    std::vector<location_t> y_vec(_max_y);
+    _locations.resize(_max_x, y_vec);
+
+    // Set each location to its correct value
+    unsigned i_elem = 0;
+    for (int x = 0; x < _max_x; ++x) {
+        for (int y = 0; y < _max_y; ++y) {
+            location_t* loc = &_locations[x][y];
+            loc->x = x;
+            loc->y = y;
+			_elements.at(i_elem).present_loc.Set(loc);
+            i_elem++;
+        }
+    }
+
+    printf("locs assigned\n");
+
+    int i = 0;
+    char name[256]; // Assuming names won't exceed 255 characters
+    while (fscanf(fin, "%255s", name) == 1) {
+        i++;
+        std::string elem_name(name);
+        netlist_elem* present_elem = create_elem_if_necessary(elem_name); // the element that we are presently working on
+
+        // Set the basic info for the element
+        present_elem->item_name = elem_name; // its name
+
+        int type; // its type TODO: error checking here
+        if (fscanf(fin, "%d", &type) != 1) {
+            fprintf(stderr, "Error reading element type\n");
+            fclose(fin);
+            return;
+        } // presently, don't actually use this
+
+        while (fscanf(fin, "%255s", name) == 1) {
+            if (name == "END") {
+                break; // last element in fanin
+            }
+            std::string fanin_name(name);
+            netlist_elem* fanin_elem = create_elem_if_necessary(fanin_name);
+            present_elem->fanin.push_back(fanin_elem);
+            fanin_elem->fanout.push_back(present_elem);
+#ifdef USE_RISCV_VECTOR
+            unsigned long* fanin_location = (unsigned long*)&fanin_elem->present_loc;
+            present_elem->fan_locs.push_back(fanin_location);
+            unsigned long* fanout_location = (unsigned long*)&present_elem->present_loc;
+            fanin_elem->fan_locs.push_back(fanout_location);
+#endif
+        }
+    }
+
+    printf("netlist created. %d elements.\n", i - 1);
+    fclose(fin);
+}
+
+//// Dummy implementation for create_elem_if_necessary to avoid undefined references
+//netlist_elem* netlist::create_elem_if_necessary(const std::string& name) {
+//    // In the actual implementation, this would create or retrieve a netlist_elem
+//    // based on the provided name.
+//    return new netlist_elem();
+//}
+
+/*
 netlist::netlist(const std::string& filename)
 {
 	ifstream fin (filename.c_str());
@@ -164,15 +248,15 @@ netlist::netlist(const std::string& filename)
 	fin >> _num_elements >> _max_x >> _max_y;
 	_chip_size = _max_x * _max_y;
 	assert(_num_elements < _chip_size);
-	
+
 	//create a chip of the right size
 	_elements.resize(_chip_size);
-	
-	cout << "locs created" << endl;
+
+    printf("locs created\n");
 	//create the location elements
-	vector<location_t> y_vec(_max_y); 
+	vector<location_t> y_vec(_max_y);
 	_locations.resize(_max_x, y_vec);
-	
+
 	//and set each one to its correct value
 	unsigned i_elem = 0;
 	for (int x = 0; x < _max_x; x++){
@@ -184,7 +268,7 @@ netlist::netlist(const std::string& filename)
 			i_elem++;
 		}//for (int y = 0; y < _max_y; y++)
 	}//for (int x = 0; x < _max_x; x++)
-	cout << "locs assigned" << endl;
+    printf("locs assigned\n");
 
 	int i=0;
 	while (!fin.eof()){
@@ -201,7 +285,7 @@ netlist::netlist(const std::string& filename)
 		present_elem->item_name = name; //its name
 
 		int type; //its type TODO errorcheck here
-		fin >> type; // presently, don't actually use this 
+		fin >> type; // presently, don't actually use this
 
 		std::string fanin_name;
 		while (fin >> fanin_name){
@@ -223,8 +307,9 @@ netlist::netlist(const std::string& filename)
 		}//while (fin >> fanin_name)
 
 	}//while (!fin.eof())
-		cout << "netlist created. " << i-1 << " elements." << endl;		
+        printf("netlist created. %d elements.\n", i-1);
 }
+*/
 
 //*****************************************************************************************
 // Used in the ctor.  Since an element have fanin from an element that can occur both
