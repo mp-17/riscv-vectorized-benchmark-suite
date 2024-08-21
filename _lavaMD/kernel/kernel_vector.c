@@ -166,6 +166,10 @@ void  kernel_cpu(	par_str par,
 			rB = &rv[first_j];
 			qB = &qv[first_j];
 
+			//unsigned long int gvl = vsetvl_e32m1(NUMBER_PAR_PER_BOX); //PLCT
+			unsigned long int gvl;
+			asm volatile ("vsetvli %0,%1,e32,m1,ta,mu" : "=r"(gvl) : "r"(NUMBER_PAR_PER_BOX));
+
 			//----------------------------------------50
 			//	Do for the # of particles in home box
 			//----------------------------------------50

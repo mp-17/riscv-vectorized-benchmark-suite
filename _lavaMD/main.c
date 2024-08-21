@@ -313,8 +313,9 @@ main(	int argc,
 
 	// Start instruction and cycles count of the region of interest
     unsigned long cycles1, cycles2, instr2, instr1;
-    instr1 = get_inst_count();
-    cycles1 = get_cycles_count();
+//    instr1 = get_inst_count();
+//    cycles1 = get_cycles_count();
+    cycles1 = get_time();
 
 	kernel_cpu(	par_cpu,
 				dim_cpu,
@@ -324,11 +325,13 @@ main(	int argc,
 				fv_cpu);
 
 	// End instruction and cycles count of the region of interest
-    instr2 = get_inst_count();
-    cycles2 = get_cycles_count();
+    //instr2 = get_inst_count();
+    //cycles2 = get_cycles_count();
+    cycles2 = get_time();
     // Instruction and cycles count of the region of interest
-    printf("-CSR   NUMBER OF EXEC CYCLES :%lu\n", cycles2 - cycles1);
-    printf("-CSR   NUMBER OF INSTRUCTIONS EXECUTED :%lu\n", instr2 - instr1);
+    printf("-RUNTIME :%lu\n", cycles2 - cycles1);
+//    printf("-CSR   NUMBER OF EXEC CYCLES :%lu\n", cycles2 - cycles1);
+//    printf("-CSR   NUMBER OF INSTRUCTIONS EXECUTED :%lu\n", instr2 - instr1);
 
 	time6 = get_time();
 
