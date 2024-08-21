@@ -29,7 +29,7 @@
 
 #include <stdlib.h>
 
-//#include <iostream>
+#include <iostream>
 #include <assert.h>
 #include <math.h>
 
@@ -59,7 +59,7 @@ routing_cost_t netlist_elem::routing_cost_given_loc(location_t loc)
 {
 	routing_cost_t fanin_cost = 0;
 	routing_cost_t fanout_cost = 0;
-
+	
 	for (int i = 0; i< fanin.size(); ++i){
 		location_t* fanin_loc = fanin[i]->present_loc.Get();
 		fanin_cost += fabs(loc.x - fanin_loc->x);
@@ -126,11 +126,11 @@ routing_cost_t netlist_elem::swap_cost_vector(_MMR_i32 xOld_loc ,_MMR_i32 xNew_l
         xLoc2           = vreinterpret_v_i64m1_i32m1(xLoc);
 
         xNo_Swap_i      = _MM_SUB_i32(xOld_loc,xLoc2,gvl);
-        xNo_Swap_aux    = _MM_VFCVT_F_X_f32(xNo_Swap_i,gvl);
+        xNo_Swap_aux    = _MM_VFCVT_F_X_f32(xNo_Swap_i,gvl); 
         xNo_Swap_aux    = _MM_VFSGNJX_f32(xNo_Swap_aux,xNo_Swap_aux,gvl);
 
         xYes_Swap_i     = _MM_SUB_i32(xNew_loc,xLoc2,gvl);
-        xYes_Swap_aux   = _MM_VFCVT_F_X_f32(xYes_Swap_i,gvl);
+        xYes_Swap_aux   = _MM_VFCVT_F_X_f32(xYes_Swap_i,gvl); 
         xYes_Swap_aux   = _MM_VFSGNJX_f32(xYes_Swap_aux,xYes_Swap_aux,gvl);
 
         // gvl     = __builtin_epi_vsetvl(a_size, __epi_e32, __epi_m1);
@@ -161,15 +161,15 @@ routing_cost_t netlist_elem::swap_cost(location_t* old_loc, location_t* new_loc)
 
 	routing_cost_t no_swap = 0;
 	routing_cost_t yes_swap = 0;
-
+	
 	//printf("fan size: %d\n" , fanin_size + fanout_size);
-
+	
 	for (int i = 0; i< fanin_size; ++i){
 		location_t* fanin_loc = fanin[i]->present_loc.Get();
 
 		no_swap += fabs(old_loc->x - fanin_loc->x);
 		no_swap += fabs(old_loc->y - fanin_loc->y);
-
+		
 		yes_swap += fabs(new_loc->x - fanin_loc->x);
 		yes_swap += fabs(new_loc->y - fanin_loc->y);
 	}

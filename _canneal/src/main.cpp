@@ -28,7 +28,7 @@
 // SUCH DAMAGE.
 
 
-//#include <iostream>
+#include <iostream>
 #include <math.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -73,9 +73,9 @@ int main (int argc, char * const argv[]) {
 #ifdef PARSEC_VERSION
 #define __PARSEC_STRING(x) #x
 #define __PARSEC_XSTRING(x) __PARSEC_STRING(x)
-        printf("PARSEC Benchmark Suite Version %d\n", __PARSEC_XSTRING(PARSEC_VERSION));
+        cout << "PARSEC Benchmark Suite Version "__PARSEC_XSTRING(PARSEC_VERSION) << endl << flush;
 #else
-        printf("PARSEC Benchmark Suite\n");
+        cout << "PARSEC Benchmark Suite" << endl << flush;
 #endif //PARSEC_VERSION
 #ifdef ENABLE_PARSEC_HOOKS
 	__parsec_bench_begin(__parsec_canneal);
@@ -84,49 +84,49 @@ int main (int argc, char * const argv[]) {
 	srandom(3);
 
 	if(argc != 5 && argc != 6) {
-        printf("Usage [program_name] NTHREADS NSWAPS TEMP NETLIST [NSTEPS]\n");
+		cout << "Usage: " << argv[0] << " NTHREADS NSWAPS TEMP NETLIST [NSTEPS]" << endl;
 		exit(1);
-	}
-
+	}	
+	
 	//argument 1 is numthreads
 	int num_threads = atoi(argv[1]);
-    printf("Threadcount\n", num_threads);
+	cout << "Threadcount: " << num_threads << endl;
 #ifndef ENABLE_THREADS
 	if (num_threads != 1){
-        printf("NTHREADS must be 1 (serial version)\n");
+		cout << "NTHREADS must be 1 (serial version)" <<endl;
 		exit(1);
 	}
 #endif
-
+		
 	//argument 2 is the num moves / temp
 	int swaps_per_temp = atoi(argv[2]);
-    printf("%d swaps per temperature step\n", swaps_per_temp);
+	cout << swaps_per_temp << " swaps per temperature step" << endl;
 
 	//argument 3 is the start temp
 	int start_temp =  atoi(argv[3]);
-    printf("netlist filename: %d\n", start_temp);
-
+	cout << "start temperature: " << start_temp << endl;
+	
 	//argument 4 is the netlist filename
 	string filename(argv[4]);
-    printf("netlist filename: %s\n", filename);
-
+	cout << "netlist filename: " << filename << endl;
+	
 	//argument 5 (optional) is the number of temperature steps before termination
 	int number_temp_steps = -1;
         if(argc == 6) {
 		number_temp_steps = atoi(argv[5]);
-        printf("number of temperature steps: %d\n", number_temp_steps);
+		cout << "number of temperature steps: " << number_temp_steps << endl;
         }
 
 
 	//now that we've read in the commandline, run the program
 	netlist my_netlist(filename);
-
+	
 
 	annealer_thread a_thread(&my_netlist,num_threads,swaps_per_temp,start_temp,number_temp_steps);
-
+	
 	//#ifdef USE_RISCV_VECTOR
     gettimeofday(&tv2, &tz);
-    elapsed1 = (double) (tv2.tv_sec-tv1.tv_sec) + (double) (tv2.tv_usec-tv1.tv_usec) * 1.e-6;
+    elapsed1 = (double) (tv2.tv_sec-tv1.tv_sec) + (double) (tv2.tv_usec-tv1.tv_usec) * 1.e-6; 
     printf("\n\nInitialization took %8.8lf secs   \n", elapsed1 );
 //#endif
 
@@ -159,7 +159,7 @@ int main (int argc, char * const argv[]) {
 
 //#ifdef USE_RISCV_VECTOR
     gettimeofday(&tv4, &tz);
-    elapsed2 = (double) (tv4.tv_sec-tv3.tv_sec) + (double) (tv4.tv_usec-tv3.tv_usec) * 1.e-6;
+    elapsed2 = (double) (tv4.tv_sec-tv3.tv_sec) + (double) (tv4.tv_usec-tv3.tv_usec) * 1.e-6; 
     printf("\n\nthread.Run() %8.8lf secs   \n", elapsed2 );
 //#endif
 
@@ -167,8 +167,8 @@ int main (int argc, char * const argv[]) {
 #ifdef ENABLE_PARSEC_HOOKS
 	__parsec_roi_end();
 #endif
-
-    printf("Final routing is: %d\n", my_netlist.total_routing_cost());
+	
+	cout << "Final routing is: " << my_netlist.total_routing_cost() << endl;
 
 #ifdef ENABLE_PARSEC_HOOKS
 	__parsec_bench_end();

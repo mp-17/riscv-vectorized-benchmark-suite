@@ -55,7 +55,7 @@ public:
 	void print_locations(const std::string& filename);
 	void release(netlist_elem* elem);
 	netlist_elem* get_random_element(long* elem_id, long different_from, Rng* rng);
-
+	
 protected:
 	unsigned _num_elements;
 	unsigned _max_x;
@@ -71,3 +71,4 @@ protected:
 
 
 #endif
+
