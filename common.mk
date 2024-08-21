@@ -13,8 +13,8 @@ script := $(rivec)/qemu/$(app).sh
 
 qemu-bin: qemu-input
 	$(MAKE) serial vector
-	cp bin/rvv-test-serial $(rootfs)/usr/bin
-	cp bin/rvv-test-vector $(rootfs)/usr/bin
+	cp bin/rvv-test-serial $(rootfs)/usr/bin/$(app)-s
+	cp bin/rvv-test-vector $(rootfs)/usr/bin/$(app)-v
 	echo "debugfs -w busybox.img <<EOF" >> $(script)
 	echo "cd /usr/bin" >> $(script)
 	echo "write $(shell pwd)/bin/rvv-test-serial $(app)-s" >> $(script)
