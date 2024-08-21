@@ -4,11 +4,11 @@
 #include <sys/time.h>
 #include <assert.h>
 #include <string.h>
-//#include <iostream>
+#include <iostream>
 #include <fstream>
 #include <string>
 
-//using namespace std;
+using namespace std;
 /************************************************************************/
 // RISC-V VECTOR Version by Cristóbal Ramírez Lazo, "Barcelona 2019"
 #ifdef USE_RISCV_VECTOR
@@ -27,14 +27,14 @@
 int rows, cols;
 int* wall;
 int* result;
-//string inputfilename;
-//string outfilename;
+string inputfilename;
+string outfilename;
 //#include "timer.h"
 
 void init(int argc, char** argv);
 void run();
 void run_vector();
-void output_printf(int *dst);
+void output_printfile(int *dst, string& filename);
 //void init_data(int *data, string& filename );
 /*************************************************************************
 *GET_TIME
@@ -53,15 +53,15 @@ float elapsed_time(long long start_time, long long end_time) {
 
 void init(int argc, char** argv)
 {
-    if(argc!=3){
-        printf("Usage: pathfiner width num_of_steps input_file\n");
+    if(argc!=4){
+        printf("Usage: pathfiner width num_of_steps input_file output_file\n");
         exit(0);
     }
 
     cols = atoi(argv[1]);
     rows = atoi(argv[2]);
     //inputfilename = argv[3];
-    //outfilename = argv[3];
+    outfilename = argv[3];
     //}else{
     //            printf("Usage: pathfiner width num_of_steps input_file output_file\n");
     //            exit(0);
@@ -70,13 +70,13 @@ void init(int argc, char** argv)
 
     wall = new int[rows * cols];
     result = new int[cols];
-
+    
     //int seed = M_SEED;
     //srand(seed);
     /*
     init_data(wall, inputfilename );
     */
-
+    
     for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
@@ -84,7 +84,7 @@ void init(int argc, char** argv)
             wall[i*cols+j] = rand() % 10;
         }
     }
-
+    
     //for (int j = 0; j < cols; j++)
     //    result[j] = wall[j];
 
@@ -116,7 +116,7 @@ int main(int argc, char** argv)
 // if(argc != 1 ) {
 //         cout << "Usage: " << argv[0] << " <input_file> " << endl;
 //         exit(1);
-//     }
+//     }   
 long long start_0 = get_time();
 init(argc,argv);
 long long end_0 = get_time();
@@ -138,9 +138,9 @@ void run()
 {
     int min;
     int *src,*dst, *temp;
-
+    
     //src = (int *)malloc(sizeof(int)*cols);
-
+    
     printf("NUMBER OF RUNS: %d\n",NUM_RUNS);
     long long start = get_time();
 
@@ -164,7 +164,7 @@ void run()
                 min = MIN(min, src[n+1]);
               dst[n] = wall[(t+1)*cols + n]+min;
             }
-        }
+        }   
         //delete src;
     }
 
@@ -173,7 +173,7 @@ void run()
 
 #ifdef RESULT_PRINT
 
-    output_printf(dst);
+    output_printfile(dst, outfilename );
 
 #endif  // RESULT_PRINT
     free(dst);
@@ -201,11 +201,11 @@ void run_vector()
         _MMR_i32    xSrc_slideup;
         _MMR_i32    xSrc_slidedown;
         _MMR_i32    xSrc;
-        _MMR_i32    xNextrow;
+        _MMR_i32    xNextrow; 
 
         int aux,aux2;
 
-        for (int t = 0; t < rows-1; t++)
+        for (int t = 0; t < rows-1; t++) 
         {
             aux = dst[0] ;
             for(int n = 0; n < cols; n = n + gvl)
@@ -224,7 +224,7 @@ void run_vector()
 
                 xNextrow = _MM_LOAD_i32(&wall[(t+1)*cols + n],gvl);
                 xNextrow = _MM_ADD_i32(xNextrow,xSrc,gvl);
-
+                
                 aux = dst[n+gvl-1];
                 _MM_STORE_i32(&dst[n],xNextrow,gvl);
                 FENCE();
@@ -238,7 +238,7 @@ void run_vector()
 
 #ifdef RESULT_PRINT
 
-    output_printf(dst);
+    output_printfile(dst, outfilename );
 
 #endif // RESULT_PRINT
 
@@ -267,21 +267,14 @@ void init_data(int *data,  string&  inputfile ) {
     fp.close();
 }
 */
-//void output_printfile(int *dst,  string& outfile ) {
-//    ofstream myfile;
-////    myfile.open(outfile);
-////    assert(myfile.is_open());
-//
-//    for (int j = 0; j < cols; j++)
-//    {
-//        cout << dst[j] <<" " ;
-//    }
-////    myfile.close();
-//}
+void output_printfile(int *dst,  string& outfile ) {
+    ofstream myfile;
+//    myfile.open(outfile);
+//    assert(myfile.is_open());
 
-void output_printf(int *dst) {
     for (int j = 0; j < cols; j++)
     {
-        printf("%d ", dst[j]);
+        cout << dst[j] <<" " ;
     }
+//    myfile.close();
 }

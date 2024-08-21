@@ -13,7 +13,7 @@
 #include <sys/time.h>
 #include <assert.h>
 #include <string.h>
-//#include <iostream>
+#include <iostream>
 #include <fstream>
 #include <string>
 #include <iomanip>
@@ -64,7 +64,7 @@ void kernel_jacobi_2d_vector(int tsteps,int n, DATA_TYPE **A,DATA_TYPE **B)
 
     xConstant = _MM_SET_f64(0.20,gvl);
 
-    for (int j=1; j<=size_x; j=j+gvl)
+    for (int j=1; j<=size_x; j=j+gvl) 
     {
         // gvl = __builtin_epi_vsetvl(size_y-j+1, __epi_e64, __epi_m1);
         gvl =  vsetvl_e64m1(size_y-j+1); //PLCT
@@ -72,7 +72,7 @@ void kernel_jacobi_2d_vector(int tsteps,int n, DATA_TYPE **A,DATA_TYPE **B)
         xUtop = _MM_LOAD_f64(&A[0][j],gvl);
         xUbottom = _MM_LOAD_f64(&A[2][j],gvl);
 
-        for (int i=1; i<=size_y; i++)
+        for (int i=1; i<=size_y; i++) 
         {
             if(i!=1)
             {
@@ -80,7 +80,7 @@ void kernel_jacobi_2d_vector(int tsteps,int n, DATA_TYPE **A,DATA_TYPE **B)
                 xU =  xUbottom;
                 xUbottom =  _MM_LOAD_f64(&A[i+1][j],gvl);
             }
-            izq = *(unsigned long int*)&A[i][j-1];
+            izq = *(unsigned long int*)&A[i][j-1]; 
             der = *(unsigned long int*)&A[i][j+gvl];
             xUleft = _MM_VSLIDE1UP_f64(xU,izq,gvl);
             xUright = _MM_VSLIDE1DOWN_f64(xU,der,gvl);
@@ -134,15 +134,6 @@ double elapsed_time(long long start_time, long long end_time) {
 }
 
 
-// Print to stdout instead of on file to help spike pk
-void output_printf(int n,DATA_TYPE **A) {
-  for (int i = 0; i < n; i++)
-    for (int j = 0; j < n; j++) {
-      printf("%.4f ", A[i][j]);
-      if (j == n-1) printf("%.4f\n", A[i][j]);
-    }
-}
-
 void output_printfile(int n,DATA_TYPE **A,  string& outfile ) {
   ofstream myfile;
   myfile.open(outfile);
@@ -160,7 +151,7 @@ void output_printfile(int n,DATA_TYPE **A,  string& outfile ) {
 int main(int argc, char** argv)
 {
   if(argc!=4){
-        printf("Usage: N TSTEPS output_file\n");
+        printf("Usage: pathfiner width N TSTEPS output_file\n");
         exit(0);
     }
 
@@ -194,7 +185,7 @@ int main(int argc, char** argv)
   long long end = get_time();
   printf("time: %lf\n", elapsed_time(start, end));
 #ifdef RESULT_PRINT
-  output_printf(n,A);
+  output_printfile(n,A, outfilename );
 #endif  // RESULT_PRINT
 
   /* Be clean. */

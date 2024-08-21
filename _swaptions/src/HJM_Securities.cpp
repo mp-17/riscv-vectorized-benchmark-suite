@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-//#include <iostream>
+#include <iostream>
 
 // #include <time.h>
 // #include <sys/time.h>
@@ -41,9 +41,9 @@ tbb::cache_aligned_allocator<parm> memory_parm;
 int NUM_TRIALS = DEFAULT_NUM_TRIALS;
 int nThreads = 1;
 int nSwaptions = 1;
-int iN = 11;
+int iN = 11; 
 //FTYPE dYears = 5.5;
-int iFactors = 3;
+int iFactors = 3; 
 parm *swaptions;
 
 long seed = 1979; //arbitrary (but constant) default value (birth year of Christian Bienia)
@@ -68,10 +68,10 @@ struct Worker {
     int end   = range.end();
 
     for(int i=begin; i!=end; i++) {
-      int iSuccess = HJM_Swaption_Blocking(pdSwaptionPrice,  swaptions[i].dStrike,
-					   swaptions[i].dCompounding, swaptions[i].dMaturity,
+      int iSuccess = HJM_Swaption_Blocking(pdSwaptionPrice,  swaptions[i].dStrike, 
+					   swaptions[i].dCompounding, swaptions[i].dMaturity, 
 					   swaptions[i].dTenor, swaptions[i].dPaymentInterval,
-					   swaptions[i].iN, swaptions[i].iFactors, swaptions[i].dYears,
+					   swaptions[i].iN, swaptions[i].iFactors, swaptions[i].dYears, 
 					   swaptions[i].pdYield, swaptions[i].ppdFactors,
 					   swaption_seed+i, NUM_TRIALS, BLOCK_SIZE, 0);
       assert(iSuccess == 1);
@@ -79,7 +79,7 @@ struct Worker {
       swaptions[i].dSimSwaptionStdError = pdSwaptionPrice[1];
 
     }
-
+     
 
 
   }
@@ -126,10 +126,10 @@ void * worker(void *arg){
         BLOCK_SIZE_AUX = BLOCK_SIZE;
       #endif
 
-       int iSuccess = HJM_Swaption_Blocking(pdSwaptionPrice,  swaptions[i].dStrike,
-                                         swaptions[i].dCompounding, swaptions[i].dMaturity,
+       int iSuccess = HJM_Swaption_Blocking(pdSwaptionPrice,  swaptions[i].dStrike, 
+                                         swaptions[i].dCompounding, swaptions[i].dMaturity, 
                                          swaptions[i].dTenor, swaptions[i].dPaymentInterval,
-                                         swaptions[i].iN, swaptions[i].iFactors, swaptions[i].dYears,
+                                         swaptions[i].iN, swaptions[i].iFactors, swaptions[i].dYears, 
                                          swaptions[i].pdYield, swaptions[i].ppdFactors,
                                          swaption_seed_vector, NUM_TRIALS, BLOCK_SIZE_AUX, 0);
        assert(iSuccess == 1);
@@ -150,7 +150,7 @@ void print_usage(char *name) {
   fprintf(stderr,"\t-sd [random number seed]\n");
 }
 
-//Please note: Whenever we type-cast to (int), we add 0.5 to ensure that the value is rounded to the correct number.
+//Please note: Whenever we type-cast to (int), we add 0.5 to ensure that the value is rounded to the correct number. 
 //For instance, if X/Y = 0.999 then (int) (X/Y) will equal 0 and not 1 (as (int) rounds down).
 //Adding 0.5 ensures that this does not happen. Therefore we use (int) (X/Y + 0.5); instead of (int) (X/Y);
 
@@ -158,13 +158,13 @@ int main(int argc, char *argv[])
 {
 	int iSuccess = 0;
 	int i,j;
-
+	
 	FTYPE **factors=NULL;
 
 #ifdef PARSEC_VERSION
 #define __PARSEC_STRING(x) #x
 #define __PARSEC_XSTRING(x) __PARSEC_STRING(x)
-        printf("PARSEC Benchmark Suite Version "__PARSEC_XSTRING(PARSEC_VERSION)"\n");
+        printf("PARSEC Benchmark Suite Version "__PARSEC_XSTRING(PARSEC_VERSION)"\n"); 
 	fflush(NULL);
 #else
         printf("PARSEC Benchmark Suite\n");
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
 #ifdef ENABLE_PARSEC_HOOKS
 	__parsec_bench_begin(__parsec_swaptions);
 #endif
-
+	
         if(argc == 1)
         {
           print_usage(argv[0]);
@@ -182,9 +182,9 @@ int main(int argc, char *argv[])
 
         for (int j=1; j<argc; j++) {
 	  if (!strcmp("-sm", argv[j])) {NUM_TRIALS = atoi(argv[++j]);}
-	  else if (!strcmp("-nt", argv[j])) {nThreads = atoi(argv[++j]);}
-	  else if (!strcmp("-ns", argv[j])) {nSwaptions = atoi(argv[++j]);}
-	  else if (!strcmp("-sd", argv[j])) {seed = atoi(argv[++j]);}
+	  else if (!strcmp("-nt", argv[j])) {nThreads = atoi(argv[++j]);} 
+	  else if (!strcmp("-ns", argv[j])) {nSwaptions = atoi(argv[++j]);} 
+	  else if (!strcmp("-sd", argv[j])) {seed = atoi(argv[++j]);} 
           else {
             fprintf(stderr,"Error: Unknown option: %s\n", argv[j]);
             print_usage(argv[0]);
@@ -268,9 +268,9 @@ int main(int argc, char *argv[])
 	factors[2][7]= -.000750;
 	factors[2][8]= -.001000;
 	factors[2][9]= -.001250;
-
+	
         // setting up multiple swaptions
-        swaptions =
+        swaptions = 
 #ifdef TBB_VERSION
 	  (parm *)memory_parm.allocate(sizeof(parm)*nSwaptions, NULL);
 #else
@@ -320,7 +320,7 @@ int main(int argc, char *argv[])
 	Worker w;
 	tbb::parallel_for(tbb::blocked_range<int>(0,nSwaptions,TBB_GRAINSIZE),w);
 #else
-
+	
 	int threadIDs[nThreads];
         for (i = 0; i < nThreads; i++) {
           threadIDs[i] = i;
@@ -332,7 +332,7 @@ int main(int argc, char *argv[])
 
 	free(threads);
 
-#endif // TBB_VERSION
+#endif // TBB_VERSION	
 
 #else
 	int threadID=0;
@@ -341,7 +341,7 @@ int main(int argc, char *argv[])
 
 //#ifdef USE_RISCV_VECTOR
      gettimeofday(&tv2_0, &tz_0);
-     elapsed0 = (double) (tv2_0.tv_sec-tv1_0.tv_sec) + (double) (tv2_0.tv_usec-tv1_0.tv_usec) * 1.e-6;
+     elapsed0 = (double) (tv2_0.tv_sec-tv1_0.tv_sec) + (double) (tv2_0.tv_usec-tv1_0.tv_usec) * 1.e-6; 
      printf("\n\nSwaption Pricing Routine took %8.8lf secs   \n", elapsed0 );
 //#endif
 
@@ -350,7 +350,7 @@ int main(int argc, char *argv[])
 #endif
 
         for (i = 0; i < nSwaptions; i++) {
-          printf("Swaption %d: [SwaptionPrice: %.10lf StdError: %.10lf] \n",
+          printf("Swaption %d: [SwaptionPrice: %.10lf StdError: %.10lf] \n", 
                    i, swaptions[i].dSimSwaptionMeanPrice, swaptions[i].dSimSwaptionStdError);
         }
 
