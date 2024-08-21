@@ -37,7 +37,7 @@ quit
 EOF
 
 # Copy the programs if present
-apps=("_axpy" "_jacobi-2d" "_canneal" "_blackscholes" "_lavamd" "_somier" "_streamcluster" "_swaptions" "_particlefilter" "_pathfinder")
+apps=("_axpy" "_jacobi-2d" "_canneal" "_blackscholes" "_lavaMD" "_somier" "_streamcluster" "_swaptions" "_particlefilter" "_pathfinder")
 
 # Loop through each script
 for name in "${apps[@]}"; do
