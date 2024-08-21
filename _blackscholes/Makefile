@@ -20,3 +20,12 @@ runspike-ser:
 
 runspike-vec:
 	$(SPIKE) --isa=rv64gcv $(PK) $(target_vec) 1 ./input/in_64K.input prices.txt &> out-vec.txt
+
+qemu-input:
+	cp input/in_64K.input $(rootfs)/usr/bin
+	echo "#!/usr/bin/env bash" > $(script)
+	echo "debugfs -w busybox.img <<EOF" >> $(script)
+	echo "cd /usr/bin" >> $(script)
+	echo "write $(shell pwd)/input/in_64K.input in_64K.input" >> $(script)
+	echo "quit" >> $(script)
+	echo "EOF" >> $(script)

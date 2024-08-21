@@ -1,5 +1,7 @@
 # RISC-V Vectorized Bencmark Suite
 
+## For instruction on how to run with QEMU, reach the end of the README
+
 ## Overview
 
 The RISC-V Vectorized Benchmark Suite is a collection composed of seven data-parallel applications from different domains. The suite focuses on benchmarking vector microarchitectures; nevertheless, it can be used as well for Multimedia SIMD microarchitectures. Current implementation is targeting RISC-V Architectures; however, it can be easily ported to any Vector/SIMD ISA thanks to a wrapper library which we developed to map vector intrinsics and math functions to the target architecture.
@@ -39,7 +41,7 @@ Cristóbal Ramirez, César Hernandez, Oscar Palomar, Osman Unsal, Marco Ramírez
         ...../bin               : swaptions binary
         common/                 : intrinsics defines & Math functions
 
-## Building Vectorized Applications 
+## Building Vectorized Applications
 
 The RISC-V Vectorized Bencmark Suite has been successfully tested on [Spike RISC-V ISA Simulator](https://github.com/riscv/riscv-isa-sim)
 
@@ -61,12 +63,12 @@ We provide precompiled binaries found in the folder bin.
 To compile any application you first enter in the subfolder and run the command make followed by the application name
 ```
 cd _application
-make application 
+make application
 ```
 For example to compile blackscholes:
 ```
 cd _blackscholes
-make blackscholes 
+make blackscholes
 ```
 The same for the other applications ...
 
@@ -75,14 +77,14 @@ The same for the other applications ...
 
 There are provided 5 different simulation sizes (arguments to run the application). But I only use it for functional testing, without calculating the time.
 ```
-simtiny 
+simtiny
 simsmall
 simmedium
-simlarge 
+simlarge
 ```
 
 Whe you are executing an application, you must write the following arguments to run a predefined simsize.
-#### simtiny 
+#### simtiny
 ```
 blackscholes_args   = "1 input/in_512.input output_prices.txt"
 canneal_args        = "1 100 300 input/100.nets 8"
@@ -95,7 +97,7 @@ matmul_args         = "8 8 8"
 axpy_args           = "256"
 ```
 
-#### simsmall 
+#### simsmall
 ```
 blackscholes_args   = "1 input/in_4K.input output_prices.txt"
 canneal_args        = "1 10000 2000 input/100000.nets 32"
@@ -106,7 +108,7 @@ pathfinder_args     = "1024 128 output.txt"
 heatequation_args   = " input/test_small.input output.ppm"
 matmul_args         = "128 128 128"
 axpy_args           = "512"
-```  
+```
 
 #### simmedium
 ```
@@ -119,7 +121,7 @@ pathfinder_args     = "2048 256 output.txt"
 heatequation_args   = " input/test_medium.input output.ppm"
 matmul_args         = "256 256 256"
 axpy_args           = "1024"
-```  
+```
 
 #### simlarge
 ```
@@ -132,7 +134,7 @@ pathfinder_args     = "2048 1024 output.txt"
 heatequation_args   = " input/test_large.input output.ppm"
 matmul_args         = "1024 1024 1024"
 axpy_args           = "2048"
-```  
+```
 
 #### Example of execution blackscholes serial version.
 ```
@@ -149,8 +151,21 @@ You will also need to install the [riscv-pk](https://github.com/riscv/riscv-pk) 
 
 ## Contact
 Cristóbal Ramírez Lazo: cristobal.ramirez@bsc.es
-PhD. Student at UPC Barcelona   
+PhD. Student at UPC Barcelona
 BSC - Barcelona Supercomputing Center
 
 Chunyu Liao chunyu@iscas.ac.cn
 PLCT Lab
+
+## QEMU
+```bash
+cd qemu
+./script/top.sh
+```
+
+When in the QEMU shell:
+```bash
+cd /usr/bin
+```
+
+Then, you can run the desired program, with the desired options.

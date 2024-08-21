@@ -27,3 +27,6 @@ runspike-vec:
 
 runspike-ser:
 	$(SPIKE) --isa=rv64gcv $(PK) $(target_ser) 256
+
+qemu-input:
+	echo "#!/usr/bin/env bash" > $(script)

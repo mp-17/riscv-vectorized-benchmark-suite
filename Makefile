@@ -1,6 +1,6 @@
 BASE_DIR := $(shell pwd)
 
-APPLICATION_DIRS := _blackscholes _swaptions _streamcluster _canneal _particlefilter _pathfinder _jacobi-2d _matmul _axpy
+APPLICATION_DIRS := _blackscholes _swaptions _streamcluster _canneal _particlefilter _pathfinder _jacobi-2d _axpy
 
 all: blackscholes swaptions streamcluster canneal pathfinder jacobi-2d axpy # particlefilter matmul
 
@@ -8,7 +8,6 @@ blackscholes:
 	cd _blackscholes; 	\
 	make vector; 		\
 	make serial;
-
 
 swaptions:
 	cd _swaptions; 		\
@@ -49,6 +48,9 @@ axpy:
 	cd _axpy; 			\
 	make vector; 		\
 	make serial;
+
+qemu-all:
+	for dir in $(APPLICATION_DIRS) ; do cd $$dir ; make qemu-bin ; cd .. ; done
 
 clean:
 	for dir in $(APPLICATION_DIRS) ; do cd $$dir ; make clean ; cd .. ; done

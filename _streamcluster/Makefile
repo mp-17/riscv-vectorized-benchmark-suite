@@ -22,3 +22,6 @@ runspike-ser:
 runspike-vec:
 	echo >output.txt; \
 	$(SPIKE) --isa=rv64gcv $(PK) $(target_vec) 3 10 128 128 128 10 none 1
+
+qemu-input:
+	echo "#!/usr/bin/env bash" > $(script)

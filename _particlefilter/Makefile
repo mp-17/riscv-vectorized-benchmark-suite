@@ -32,3 +32,6 @@ runspike-vec:
 
 clean:
 	rm bin/*
+
+qemu-input:
+	echo "#!/usr/bin/env bash" > $(script)
