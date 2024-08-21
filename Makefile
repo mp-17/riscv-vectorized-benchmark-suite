@@ -1,8 +1,8 @@
 BASE_DIR := $(shell pwd)
 
-APPLICATION_DIRS := _blackscholes _swaptions _streamcluster _canneal _particlefilter _pathfinder _jacobi-2d _axpy _lavaMD
+APPLICATION_DIRS := _blackscholes _swaptions _streamcluster _canneal _particlefilter _pathfinder _jacobi-2d _axpy _lavaMD _somier
 
-all: blackscholes swaptions streamcluster canneal pathfinder jacobi-2d axpy  particlefilter lavaMD matmul
+all: blackscholes swaptions streamcluster canneal pathfinder jacobi-2d axpy  particlefilter lavaMD matmul _somier
 
 blackscholes:
 	cd _blackscholes; 	\

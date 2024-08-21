@@ -434,8 +434,8 @@ vint32m2_t vslideup_vx_i32m2 (vint32m2_t dst, vint32m2_t src, size_t offset)
 //#define _MM_VGETFIRST_f64   __builtin_epi_vgetfirst_1xf64
 #define _MM_VGETFIRST_f64(op1, op2) vfmv_f_s_f64m1_f64(op1)
 
-#define _MM_VSLIDEUP_f32    __builtin_epi_vslideup_2xf32 //TODO, not being used
-#define _MM_VSLIDEUP_f64    __builtin_epi_vslideup_1xf64 //TODO, not being used
+#define _MM_VSLIDEUP_f32(vd, vs2, rs1, vl)    __riscv_vslideup_vx_f32m1(vd, vs2, rs1, vl);
+#define _MM_VSLIDEUP_f64(vd, vs2, rs1, vl)    __riscv_vslideup_vx_f64m1(vd, vs2, rs1, vl);
 
 //#define _MM_VSLIDE1UP_f32    __builtin_epi_vslide1up_2xf32
 #define _MM_VSLIDE1UP_f32(op1, op2, op3) vfslide1up_vf_f32m1(op1, op2, op3)
